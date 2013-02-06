@@ -1,0 +1,23 @@
+{
+  "name"          : "metalminer",
+  "description"   : "Module for lyrics extraction from various web sites",
+  "repository"    : {
+    "type": "git",
+    "url": "http://github.com/sjaak666/metalminer"
+  },
+  "keywords"      : ["lyrics", "data mining"],
+  "author"        : { 
+    "name": "Jon Asplund",
+    "email": "jon.asplund@gmail.com"
+  },
+  "contributors"  : [],
+  "licenses"      : ["MIT"],
+  "dependencies"  : {
+    "cheerio": "0.x",
+    "request": "2.x",
+    "async":   "0.1.x"
+  },
+  "version"       : "0.3",
+  "engines"       : { "node": ">= 0.8" },
+  "main"          : "./index.js"
+}
