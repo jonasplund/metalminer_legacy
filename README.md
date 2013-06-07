@@ -4,7 +4,11 @@ A node module to extract music related info from various sources.
 
 ## Install
 
-From source:
+<pre>
+  npm install metalminer
+</pre>
+
+Or from source:
 
 <pre>
   git clone git://github/sjaak666/metalminer.git
@@ -41,7 +45,7 @@ Currently supported sites:
 __Arguments__
 * metaInfo - An object containing the properties 'title', 'artist' and 'album'
 * callback - callback(err, results). 
-  err is undefined if lyrics where found and otherwise a HTML string with info on the various sources.
+  err is undefined if lyrics were found and otherwise a HTML string with info on the various sources.
   results is a string containing the lyrics.
 
 ### metalminer.getBandInfo(metaInfo, callback)
@@ -65,3 +69,14 @@ __Arguments__
 * callback - callback(err, results). 
   err is undefined if lyrics where found and a HTML string with info on the various sources.
   results is a string containing the lyrics.
+
+### metalminer.getVideo(metaInfo, callback)
+
+Currently supported sites:
+* youtube.com
+
+__Arguments__
+* metaInfo - An object containing the properties 'artist' and 'title'
+* callback - callback(err, results)
+  err is undefined if video was found and otherwise a HTML string with info the various sources.
+  results is a string containing the Youtube id.

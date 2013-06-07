@@ -25,36 +25,62 @@ var testobj4 = {
     title: '01 - ! (Foreword)'
 };
 
+var testobj5 = {
+    artist: 'Gloryhammer',
+    album: 'Tales from the Kingdom of Fife',
+    title: '01 - Angus Mcfife'
+};
+
+var testobj6 = {
+    artist: 'Fejd',
+    album: 'Nagelfar',
+    title: '03 - Nagelfar'
+};
+
 var errorobj = {
     album: "sdfks",
     artist: 'adk',
     title: 'dkd'
 };
 
+
+/*mm.getVideo(testobj6, function (err, res) {
+    console.log(err);
+    console.log(res);
+});*/
+
 mm.getSimilarArtists(testobj, function (err, res) {
+    console.log(err);
     assert.ok(!err);
     assert.ok(res);
-    if (!err)
-        console.log("Test similar 1: \n" + res);
+    console.log("Test similar 1: \n" + res);
 });
 
-mm.getSimilarArtists(testobj2, function (err, res) {
+/*mm.getSimilarArtists(testobj2, function (err, res) {
     if (!err)
         console.log("Test similar 2: \n" + res);
     else
         console.log("Test similar 2 error: \n" + err);
-});
+});*/
 
-mm.getSimilarArtists(errorobj, function (err, res) {
+/*mm.getSimilarArtists(errorobj, function (err, res) {
     assert.ok(err);
     assert.ok(!res);
-});
+});*/
 
-mm.getLyrics(testobj, function (err, res) {
+/*mm.getVideo(testobj, function (err, res) {
     assert.ok(!err);
     assert.ok(res);
-});
+    console.log("res");
+    console.log(res);
+});*/
 
+/*mm.getLyrics(testobj, function (err, res) {
+    assert.ok(!err);
+    assert.ok(res);
+    console.log(res);
+});*/
+/*
 mm.getLyrics(testobj2, function (err, res) {
     assert.ok(!err);
     assert.ok(res);
@@ -78,4 +104,4 @@ mm.getBandInfo(testobj2, function (err, res) {
 mm.getBandInfo(errorobj, function (err, res) {
     assert.ok(err);
     assert.ok(!res);
-});
+});*/

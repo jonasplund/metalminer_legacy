@@ -26,7 +26,7 @@
             error: '',
             data: ''
         }];
-        functionCaller(functions, metaInfo, callback);
+        functionCaller(functions, metaInfo, false, callback);
     };
 
     mm.getBandInfo = function (metaInfo, callback) {
@@ -37,22 +37,45 @@
             data: '',
             error: ''
         }];
-        functionCaller(functions, metaInfo, callback);
+        functionCaller(functions, metaInfo, false, callback);
     };
 
     mm.getSimilarArtists = function (metaInfo, callback) {
         var functions = [{
             name: 'Metal Archives',
-            func: getMetalArchivesSimilarArtist,
+            func: getMetalArchivesSimilarArtists,
+            prio: 1,
+            data: '',
+            error: ''
+        }, {
+            name: 'Pandora',
+            func: getPandoraSimilarArtists,
+            prio: 2,
+            data: '',
+            error: ''
+        }, {
+            name: 'lastfm',
+            func: getLastfmSimilarArtists,
+            prio: 3,
+            data: '',
+            error: ''
+        }];
+        functionCaller(functions, metaInfo, true, callback);
+    };
+
+    mm.getVideo = function (metaInfo, callback) {
+        var functions = [{
+            name: 'Youtube',
+            func: getYoutube,
             prio: 1,
             data: '',
             error: ''
         }];
-        functionCaller(functions, metaInfo, callback);
+        functionCaller(functions, metaInfo, false, callback);
     };
 
-    // Wrapper for async
-    var functionCaller = function (objectarr, metaInfo, callback) {
+    var functionCaller = function (objectarr, metaInfo, merge, callback) {
+        // Wrapper for async
         var fns = objectarr.map(function (item) {
             return function (callback2) {
                 item.func.call(this, metaInfo, callback2);
@@ -69,19 +92,38 @@
                         objectarr[i].data = res[i].data;
                     }
                 }
-                objectarr.sort(function (a, b) {
-                    if (a.error && !b.error) {
-                        return 1;
+                if (!merge) {
+                    objectarr.sort(function (a, b) {
+                        if (a.error && !b.error) {
+                            return 1;
+                        }
+                        if (!a.error && b.error) {
+                            return -1;
+                        }
+                        return a.prio - b.prio;
+                    });
+                    if (objectarr.filter(function (item) { return item.error; }).length === objectarr.length) {
+                        callback(objectarr.map(function (item) { return item.name + ': ' + item.error; }).join('<br />'));
+                    } else {
+                        callback(undefined, objectarr[0].data);
                     }
-                    if (!a.error && b.error) {
-                        return -1;
-                    }
-                    return a.prio - b.prio;
-                });
-                if (objectarr.filter(function (item) { return item.error; }).length === objectarr.length) {
-                    callback(objectarr.map(function (item) { return item.name + ': ' + item.error; }).join('<br />'));
                 } else {
-                    callback(undefined, objectarr[0].data);
+                    var resarray = [];
+                    var i = 0;
+                    // Merge
+                    objectarr.map(function (item) {
+                        if (!item.error) resarray.push(item.data);
+                    });
+                    // Flatten, sort and remove duplicates
+                    var merged = [].concat.apply([], resarray).sort().filter(function(elem, pos, self) {
+                        return self.indexOf(elem) === pos;
+                    });
+                    if (objectarr.filter(function (item) { return item.error; }).length === objectarr.length) {
+                        callback(objectarr.map(function (item) { return item.name + ': ' + item.error; }).join('<br />'));
+                    } else {
+                        callback(undefined, merged);
+                    }
+
                 }
             }
         );
@@ -115,8 +157,46 @@
                 if (songlyrics.length < songnr + 1) {
                     callback(undefined, { error: 'Unknown error.' });
                 } else {
+                    if (songlyrics[songnr + 1].indexOf("lyrics not available") > -1) {
+                        callback(undefined, { error: 'Song found, but no lyrics.'});
+                    }
                     callback(undefined, { data: songlyrics[songnr + 1].trim() });
                 }
+            }
+        });
+    };
+
+    var getYoutube = function (metaInfo, callback) {
+        if (!metaInfo || !callback) {
+            return;
+        }
+        var artist = metaInfo.artist.toLowerCase().replace(/ /g, '+');
+        var title = metaInfo.title.toLowerCase().replace(/^[0-9]{2,3} - /, '').replace(/ /g, '+');
+        var uri = 'http://www.google.com/search?q=' + [artist, title].join('+') + '+official+site:www.youtube.com';
+        uri = encodeURI(uri);
+        request({ uri: uri }, function (err, res, body) {
+            if (err) {
+                callback(undefined, { error: 'Request error.' });
+                return;
+            }
+            var $ = cheerio.load(body, { ignoreWhitespace: true });
+            var links = $('body h3 a');
+            var link = null;
+            for (var i = 0, endi = links.length; i < endi; i++) {
+                if (links[i] && links[i].attribs && links[i].attribs.href && (links[i].attribs.href.indexOf('watch') > -1)) {
+                    link = links[i];
+                    break;
+                }
+            }
+            if (link == null) {
+                callback(undefined, { error: 'Malformed response from google.' });
+                return;
+            }
+            var matches = link.attribs.href.replace('/url?q=', '').match(/watch%3Fv%3D(.*?)&amp/);
+            if (matches.length > 1) {
+                callback(undefined, { data: matches[1] });
+            }  else {
+                callback(undefined, { error: 'No /watch url found.' });
             }
         });
     };
@@ -194,9 +274,16 @@
                 var match = link.match(/id="lyricsLink_(.*?)"/)[1];
                 var href = 'http://www.metal-archives.com/release/ajax-view-lyrics/id/' + match;
                 request(href, function (err, res, body2) {
-                    if (err) { callback(undefined, { error: 'Request error.' }); }
+                    if (err) { 
+                        callback(undefined, { error: 'Request error.' }); 
+                        return;
+                    }
+                    if (body2.indexOf('lyrics not available') > -1) {
+                        callback(undefined, { error: 'Lyrics not available.' });
+                        return;
+                    }
                     if (typeof callback === 'function') {
-                        callback(undefined, { data: body2.trim() });
+                        callback(undefined, { data: body2 });
                     }
                 });
             }
@@ -229,7 +316,72 @@
         });
     };
 
-    var getMetalArchivesSimilarArtist = function (metaInfo, callback) {
+    var getLastfmSimilarArtists = function (metaInfo, callback) {
+        if (!metaInfo || !callback) {
+            return;
+        }
+        var uri = 'http://ws.audioscrobbler.com/2.0/?method=artist.getsimilar&artist=';
+        uri += metaInfo.artist.toLowerCase().replace(/ /gi, '+');
+        uri += '&api_key=0bf8c3f7dad9be95eb973b751216d364&format=json';
+        request.get(uri, function (err, res, body) {
+            if (err) {
+                callback(undefined, { error: 'Request error' });
+                return;
+            }
+            try {
+                body = JSON.parse(body);
+            } catch (e) {
+                callback(undefined, { error: 'Did not get JSON response.' });
+                return;
+            }
+            if (body.error) {
+                callback(undefined, { error: body.message });
+                return;
+            }
+            if (body.similarartists && body.similarartists.artist) {
+                var artists = body.similarartists.artist;
+                var results = [];
+                for (var i = 0, endi = artists.length; i < endi; i++) {
+                    if (artists[i].name && artists[i].name !== "") {
+                        results.push(artists[i].name);
+                    }
+                }
+                callback(undefined, { data: results });
+            } else callback (undefined, { error: 'No artists found.' })
+        });
+    };
+
+    var getPandoraSimilarArtists = function (metaInfo, callback) {
+        if (!metaInfo || !callback) {
+            return;
+        }
+        var uri = 'http://pandora.com/json/music/artist/';
+        uri += metaInfo.artist.toLowerCase().replace(/ /gi, '-');
+        request.get(uri, function (err, res, body) {
+            if (err) {
+                callback(undefined, { error: 'Request error' });
+                return;
+            }
+            try {
+                body = JSON.parse(body);
+            } catch (e) {
+                callback(undefined, { error: 'Did not get JSON response.' });
+                return;
+            }
+            if (body.error || !body.artistExplorer || !body.artistExplorer.similar) {
+                callback(undefined, { error: 'Not found.'});
+                return;
+            }
+            var names = [body.artistExplorer.similar.length];
+            for (var i = 0, endi = body.artistExplorer.similar.length; i < endi; i++) {
+                var name = body.artistExplorer.similar[i]['@name'];
+                names[i] = name;
+            }
+            callback(undefined, { data: names });
+        });        
+    }
+
+    var getMetalArchivesSimilarArtists = function (metaInfo, callback) {
         if (!metaInfo || !callback) {
             return;
         }
@@ -244,6 +396,7 @@
                 body = JSON.parse(body);
             } catch (e) {
                 callback(undefined, { error: 'Did not get JSON response.' });
+                return;
             }
             if (body.error !== '' || parseInt(body.iTotalDisplayRecords, 10) < 1) {
                 callback(undefined, { error: 'Not found.' });
