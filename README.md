@@ -52,6 +52,7 @@ __Arguments__
 
 Currently supported sites:
 * wikipedia.org
+* metal-archives.com
 
 __Arguments__
 * metaInfo - An object containing the property 'artist'
@@ -63,6 +64,8 @@ __Arguments__
 
 Currently supported sites:
 * metal-archives.com
+* pandora.com
+* last.fm
 
 __Arguments__
 * metaInfo - An object containing the properties 'artist' and 'album'

@@ -17,7 +17,7 @@
     "request": "2.x",
     "async":   "0.2.x"
   },
-  "version"       : "0.3.3",
+  "version"       : "0.5.0",
   "engines"       : { "node": ">= 0.8" },
   "main"          : "./index.js"
 }
