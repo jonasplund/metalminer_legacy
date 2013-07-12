@@ -56,7 +56,7 @@
             return;
         }
         var uri = 'http://www.metal-archives.com/search/ajax-advanced/searching/albums/?bandName=';
-        uri += metaInfo.artist.replace(/ /gi, '+') + '&releaseTitle=' + metaInfo.album.replace(/ /gi, '+');
+        uri += metaInfo.artist.replace(/ /gi, '+') + '&releaseTitle=' + metaInfo.album.replace(/\(.*?\)/gi, '').replace(/ /gi, '+');
         request.get(uri, function (err, res, body) {
             if (err) {
                 callback(undefined, { error: 'Request error.' });

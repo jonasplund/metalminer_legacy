@@ -16,10 +16,6 @@
         var title = metaInfo.title.toLowerCase().replace(/[^a-z]/gi, '');
         uri += artist + '/' + album + '.html';
         request(uri, function (err, res, body) {
-            console.log(uri);
-            console.log(err);
-            console.log(body);
-
             if (err || body === '') {
                 callback(undefined, { error: 'Request error.'});
                 return;
@@ -59,7 +55,7 @@
         uri += 'songTitle=' + metaInfo.title.replace(/^[0-9]{2,3} - /, '') + '&';
         uri += 'bandName=' + metaInfo.artist + '&';
         uri += 'releaseTitle=' + metaInfo.album;
-        uri = uri.replace(/ /g, '+');
+        uri = uri.replace(/\(.*?\)/, '').replace(/ /g, '+');
         request(uri, function (err, res, body) {
             if (err) {
                 callback(undefined, { error: 'Request error.' });
