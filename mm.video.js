@@ -33,7 +33,7 @@
                 return;
             }
             var matches = link.attribs.href.replace('/url?q=', '').match(/watch%3Fv%3D(.*?)&amp/);
-            if (matches.length > 1) {
+            if (matches !== null && matches.length > 1) {
                 callback(undefined, { data: matches[1] });
             }  else {
                 callback(undefined, { error: 'No /watch url found.' });

@@ -1,23 +1,39 @@
 {
-  "name"          : "metalminer",
-  "description"   : "Module for music information extraction from various web sites",
-  "repository"    : {
+  "name": "metalminer",
+  "description": "Module for music information extraction from various web sites",
+  "repository": {
     "type": "git",
     "url": "git://github.com/sjaak666/metalminer.git"
   },
-  "keywords"      : ["lyrics", "band info", "similar artists", "data mining"],
-  "author"        : { 
+  "keywords": [
+    "lyrics",
+    "band info",
+    "similar artists",
+    "data mining"
+  ],
+  "author": {
     "name": "Jon Asplund",
     "email": "jon.asplund@gmail.com"
   },
-  "contributors"  : [],
-  "licenses"      : ["MIT"],
-  "dependencies"  : {
+  "contributors": [],
+  "licenses": [
+    "MIT"
+  ],
+  "dependencies": {
     "cheerio": "0.x",
     "request": "2.x",
-    "async":   "0.2.x"
+    "async": "0.2.x"
   },
-  "version"       : "0.5.1",
-  "engines"       : { "node": ">= 0.8" },
-  "main"          : "./index.js"
+  "version": "0.5.2",
+  "engines": {
+    "node": ">= 0.8"
+  },
+  "main": "./index.js",
+  "readme": "# Metalminer\r\n\r\nA node module to extract music related info from various sources.\r\n\r\n## Install\r\n\r\n<pre>\r\n  npm install metalminer\r\n</pre>\r\n\r\nOr from source:\r\n\r\n<pre>\r\n  git clone git://github/sjaak666/metalminer.git\r\n  cd metalminer\r\n  npm link\r\n</pre>\r\n\r\n## Usage\r\n\r\n```javascript\r\nvar mm = require('metalminer');\r\n\r\n// To see which properties are necessary in metaInfo, see below\r\nvar metaInfo = {\r\n    title: 'Song Title',\r\n    artist: 'Band name',\r\n    album: 'Album name'\r\n};\r\n\r\nmm.getLyrics(metaInfo, function (err, data) {\r\n    console.log(err || data);\r\n});\r\n```\r\n\r\n## Methods\r\n\r\n### metalminer.getLyrics(metaInfo, callback)\r\n\r\nCurrently supported sites:\r\n* metal-archives.com\r\n* songlyrics.com\r\n* darklyrics.com\r\n\r\n__Arguments__\r\n* metaInfo - An object containing the properties 'title', 'artist' and 'album'\r\n* callback - callback(err, results). \r\n  err is undefined if lyrics were found and otherwise a HTML string with info on the various sources.\r\n  results is a string containing the lyrics.\r\n\r\n### metalminer.getBandInfo(metaInfo, callback)\r\n\r\nCurrently supported sites:\r\n* wikipedia.org\r\n* metal-archives.com\r\n\r\n__Arguments__\r\n* metaInfo - An object containing the property 'artist'\r\n* callback - callback(err, results). \r\n  err is undefined if band info was found and otherwise a HTML string with info on the various sources.\r\n  results is an array with band names.\r\n\r\n### metalminer.getSimilarArtists(metaInfo, callback)\r\n\r\nCurrently supported sites:\r\n* metal-archives.com\r\n* pandora.com\r\n* last.fm\r\n\r\n__Arguments__\r\n* metaInfo - An object containing the properties 'artist' and 'album'\r\n* callback - callback(err, results). \r\n  err is undefined if lyrics where found and a HTML string with info on the various sources.\r\n  results is a string containing the lyrics.\r\n\r\n### metalminer.getVideo(metaInfo, callback)\r\n\r\nCurrently supported sites:\r\n* youtube.com\r\n\r\n__Arguments__\r\n* metaInfo - An object containing the properties 'artist' and 'title'\r\n* callback - callback(err, results)\r\n  err is undefined if video was found and otherwise a HTML string with info the various sources.\r\n  results is a string containing the Youtube id.",
+  "readmeFilename": "README.md",
+  "bugs": {
+    "url": "https://github.com/sjaak666/metalminer/issues"
+  },
+  "_id": "metalminer@0.5.2",
+  "_from": "metalminer@0.5.2"
 }

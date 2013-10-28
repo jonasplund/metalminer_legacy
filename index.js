@@ -40,8 +40,7 @@
             prio: 1,
             data: '',
             error: ''
-        }];
-        var functions = [{
+        }, {
             name: 'Metal Archives',
             func: bandInfo.metalArchives,
             prio: 2,
