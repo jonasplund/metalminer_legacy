@@ -40,7 +40,6 @@ mm.getLyrics(metaInfo, function (err, data) {
 Currently supported sites:
 * metal-archives.com
 * songlyrics.com
-* darklyrics.com
 
 __Arguments__
 * metaInfo - An object containing the properties 'title', 'artist' and 'album'
@@ -55,7 +54,7 @@ Currently supported sites:
 * metal-archives.com
 
 __Arguments__
-* metaInfo - An object containing the property 'artist'
+* metaInfo - An object containing the properties 'artist' and 'album'. album can be set to any album made by the artist and is used to filter the results.
 * callback - callback(err, results). 
   err is undefined if band info was found and otherwise a HTML string with info on the various sources.
   results is an array with band names.
@@ -75,6 +74,8 @@ __Arguments__
 
 ### metalminer.getVideo(metaInfo, callback)
 
+To use the video feature you need a Google API key which you set in the settings.js file.  
+
 Currently supported sites:
 * youtube.com
 
@@ -83,3 +84,13 @@ __Arguments__
 * callback - callback(err, results)
   err is undefined if video was found and otherwise a HTML string with info the various sources.
   results is a string containing the Youtube id.
+
+### metalminer.getSetlist(metaInfo, callback)
+
+Currently supported sites:
+* last.fm
+
+__ Arguments__
+* metaInfo - An object containing the property 'artist'
+* callback - callback(err, results)
+  err is undefined if setlist was found and otherwise an array of song titles from the band's latest concert.

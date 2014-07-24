@@ -1,12 +1,13 @@
 (function () {
     'use strict';
-    var request = require('request').defaults({ headers: { 'User-Agent': 'metalminer/0.5 (http://jooon.mooo.com:8088; jon.asplund@gmail.com)'} }),
+    var request = require('request').defaults({ headers: { 'User-Agent': 'metalminer/0.7 (http://jooon.mooo.com:8088; jon.asplund@gmail.com)'} }),
         cheerio = require('cheerio'),
         async = require('async'),
-        lyrics = require('./mm.lyrics.js'),
-        bandInfo = require('./mm.bandInfo.js'),
-        similarArtists = require('./mm.similarArtists.js'),
-        video = require('./mm.video.js');
+        lyrics = require('./lib/lyrics.js'),
+        bandInfo = require('./lib/bandInfo.js'),
+        similarArtists = require('./lib/similarArtists.js'),
+        video = require('./lib/video.js'),
+        setlist = require('./lib/setlist.js');
 
     var mm = module.exports = {};
 
@@ -15,12 +16,6 @@
             name: 'Metal Archives',
             func: lyrics.metalArchives,
             prio: 1,
-            error: '',
-            data: ''
-        }, {
-            name: 'Dark Lyrics',
-            func: lyrics.darkLyrics,
-            prio: 2,
             error: '',
             data: ''
         }, {
@@ -77,6 +72,17 @@
         var functions = [{
             name: 'Youtube',
             func: video.youtube,
+            prio: 1,
+            data: '',
+            error: ''
+        }];
+        functionCaller(functions, metaInfo, false, callback);
+    };
+
+    mm.getSetlist = function (metaInfo, callback) {
+        var functions = [{
+            name: 'setlistfm',
+            func: setlist.setlistfm,
             prio: 1,
             data: '',
             error: ''
